@@ -17,3 +17,14 @@ export interface PaymentMethod {
   name: string;
   icon: React.ComponentType;
 }
+
+export interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  createdAt: Date;
+  lastPurchase?: Date;
+  totalSpent: number;
+}
