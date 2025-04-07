@@ -8,7 +8,9 @@ import {
   ShoppingCart, 
   CreditCard,
   Wallet,
-  Banknote
+  Banknote,
+  Receipt,
+  QrCode
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Product } from "@/types/pos-types";
@@ -20,6 +22,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface CartProps {
   cart: (Product & { quantity: number })[];
@@ -28,6 +32,39 @@ interface CartProps {
   clearCart: () => void;
   getCartTotal: () => number;
 }
+
+const PAYMENT_METHODS = [
+  {
+    id: "credit_card",
+    name: "Credit Card",
+    icon: CreditCard,
+    description: "Pay with Visa, Mastercard, Amex"
+  },
+  {
+    id: "cash",
+    name: "Cash",
+    icon: Banknote,
+    description: "Pay with cash on delivery"
+  },
+  {
+    id: "digital_wallet",
+    name: "Digital Wallet",
+    icon: Wallet,
+    description: "Apple Pay, Google Pay, Samsung Pay"
+  },
+  {
+    id: "bank_transfer",
+    name: "Bank Transfer",
+    icon: Receipt,
+    description: "Pay directly from your bank account"
+  },
+  {
+    id: "qr_code",
+    name: "QR Code",
+    icon: QrCode,
+    description: "Scan to pay with your phone"
+  }
+];
 
 const Cart = ({ 
   cart, 
@@ -65,7 +102,7 @@ const Cart = ({
     // Process payment logic would go here in a real app
     toast({
       title: "Payment successful!",
-      description: `Your order has been processed via ${paymentMethod}.`,
+      description: `Your order has been processed via ${PAYMENT_METHODS.find(method => method.id === paymentMethod)?.name}.`,
     });
     
     clearCart();
@@ -219,32 +256,27 @@ const Cart = ({
             </div>
             
             <h3 className="mb-3 font-medium">Payment Method:</h3>
-            <div className="grid grid-cols-3 gap-3">
-              <Button
-                variant={paymentMethod === "Credit Card" ? "default" : "outline"}
-                className="flex flex-col h-auto py-3"
-                onClick={() => setPaymentMethod("Credit Card")}
-              >
-                <CreditCard className="h-6 w-6 mb-1" />
-                <span className="text-sm">Credit Card</span>
-              </Button>
-              <Button
-                variant={paymentMethod === "Cash" ? "default" : "outline"}
-                className="flex flex-col h-auto py-3"
-                onClick={() => setPaymentMethod("Cash")}
-              >
-                <Banknote className="h-6 w-6 mb-1" />
-                <span className="text-sm">Cash</span>
-              </Button>
-              <Button
-                variant={paymentMethod === "Digital Wallet" ? "default" : "outline"}
-                className="flex flex-col h-auto py-3"
-                onClick={() => setPaymentMethod("Digital Wallet")}
-              >
-                <Wallet className="h-6 w-6 mb-1" />
-                <span className="text-sm">Digital Wallet</span>
-              </Button>
-            </div>
+            <RadioGroup 
+              value={paymentMethod || ""} 
+              onValueChange={setPaymentMethod}
+              className="space-y-3"
+            >
+              {PAYMENT_METHODS.map((method) => {
+                const Icon = method.icon;
+                return (
+                  <div key={method.id} className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-gray-50 transition-colors">
+                    <RadioGroupItem value={method.id} id={method.id} />
+                    <Label htmlFor={method.id} className="flex flex-1 items-center cursor-pointer">
+                      <Icon className="h-5 w-5 mr-3 text-gray-600" />
+                      <div>
+                        <p className="font-medium">{method.name}</p>
+                        <p className="text-sm text-gray-500">{method.description}</p>
+                      </div>
+                    </Label>
+                  </div>
+                );
+              })}
+            </RadioGroup>
           </div>
           
           <DialogFooter className="sm:justify-between">

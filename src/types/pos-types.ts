@@ -11,3 +11,9 @@ export interface Category {
   id: string;
   name: string;
 }
+
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  icon: React.ComponentType;
+}

@@ -19,6 +19,10 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           src={image} 
           alt={name}
           className="w-full h-full object-cover"
+          loading="lazy"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "https://placehold.co/200x200?text=Product";
+          }}
         />
       </div>
       <CardContent className="p-3">
