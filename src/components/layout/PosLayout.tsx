@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, ShoppingCart, User, Settings, LogOut, PieChart, Coffee } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Link, useLocation } from "react-router-dom";
 
 interface PosLayoutProps {
   children: React.ReactNode;
@@ -13,19 +14,25 @@ const PosLayout = ({ children }: PosLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const location = useLocation();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const handleMenuClick = (menuItem: string) => {
+  const handleLogout = () => {
     toast({
-      title: `${menuItem} clicked`,
-      description: "This would navigate to the selected section in a full implementation.",
+      title: "Logout clicked",
+      description: "This would log out a user in a full implementation.",
     });
     if (isMobile) {
       setSidebarOpen(false);
     }
+  };
+
+  // Check if the current path matches the link's path
+  const isActive = (path: string) => {
+    return location.pathname === path;
   };
 
   return (
@@ -48,47 +55,68 @@ const PosLayout = ({ children }: PosLayoutProps) => {
             <nav className="px-2 space-y-1">
               <Button 
                 variant="ghost" 
-                className="w-full justify-start py-3 mb-2"
-                onClick={() => handleMenuClick("Dashboard")}
+                className={`w-full justify-start py-3 mb-2 ${isActive('/') ? 'bg-primary/10' : ''}`}
+                asChild
               >
-                <PieChart className="h-5 w-5 mr-4" />
-                Dashboard
+                <Link to="/">
+                  <PieChart className="h-5 w-5 mr-4" />
+                  Dashboard
+                </Link>
               </Button>
               
               <Button 
                 variant="ghost" 
-                className="w-full justify-start py-3 mb-2 bg-primary/10"
-                onClick={() => handleMenuClick("Sales")}
+                className={`w-full justify-start py-3 mb-2 ${isActive('/sales') ? 'bg-primary/10' : ''}`}
+                asChild
               >
-                <ShoppingCart className="h-5 w-5 mr-4" />
-                Sales
+                <Link to="/sales">
+                  <ShoppingCart className="h-5 w-5 mr-4" />
+                  Sales
+                </Link>
               </Button>
               
               <Button 
                 variant="ghost" 
-                className="w-full justify-start py-3 mb-2"
-                onClick={() => handleMenuClick("Products")}
+                className={`w-full justify-start py-3 mb-2 ${isActive('/products') ? 'bg-primary/10' : ''}`}
+                asChild
               >
-                <Coffee className="h-5 w-5 mr-4" />
-                Products
+                <Link to="/products">
+                  <Coffee className="h-5 w-5 mr-4" />
+                  Products
+                </Link>
               </Button>
               
               <Button 
                 variant="ghost" 
-                className="w-full justify-start py-3 mb-2"
-                onClick={() => handleMenuClick("Users")}
+                className={`w-full justify-start py-3 mb-2 ${isActive('/customers') ? 'bg-primary/10' : ''}`}
+                asChild
               >
-                <User className="h-5 w-5 mr-4" />
-                Users
+                <Link to="/customers">
+                  <User className="h-5 w-5 mr-4" />
+                  Customers
+                </Link>
               </Button>
               
               <Button 
                 variant="ghost" 
-                className="w-full justify-start py-3 mb-2"
-                onClick={() => handleMenuClick("Settings")}
+                className={`w-full justify-start py-3 mb-2 ${isActive('/users') ? 'bg-primary/10' : ''}`}
+                asChild
               >
-                <Settings className="h-5 w-5 mr-4" />
-                Settings
+                <Link to="/users">
+                  <User className="h-5 w-5 mr-4" />
+                  Users
+                </Link>
+              </Button>
+              
+              <Button 
+                variant="ghost" 
+                className={`w-full justify-start py-3 mb-2 ${isActive('/settings') ? 'bg-primary/10' : ''}`}
+                asChild
+              >
+                <Link to="/settings">
+                  <Settings className="h-5 w-5 mr-4" />
+                  Settings
+                </Link>
               </Button>
             </nav>
           </div>
@@ -97,7 +125,7 @@ const PosLayout = ({ children }: PosLayoutProps) => {
             <Button 
               variant="ghost" 
               className="w-full justify-start text-red-500"
-              onClick={() => handleMenuClick("Logout")}
+              onClick={handleLogout}
             >
               <LogOut className="h-5 w-5 mr-4" />
               Sign Out
@@ -115,7 +143,14 @@ const PosLayout = ({ children }: PosLayoutProps) => {
               <Button variant="ghost" size="icon" onClick={toggleSidebar} className="md:hidden">
                 {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
-              <h1 className="ml-4 text-lg font-semibold">Sales Register</h1>
+              <h1 className="ml-4 text-lg font-semibold">
+                {location.pathname === "/" && "Sales Register"}
+                {location.pathname === "/sales" && "Sales Overview"}
+                {location.pathname === "/products" && "Product Management"}
+                {location.pathname === "/customers" && "Customer Management"}
+                {location.pathname === "/users" && "User Management"}
+                {location.pathname === "/settings" && "Settings"}
+              </h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm font-medium">John Cashier</span>
